@@ -1,0 +1,7 @@
+"0"," leaflet() %>%"
+"0"," setView(lat = 2.05696,lng = 35.10244,zoom = 10) %>%"
+"0","        addProviderTiles(providers$Esri.NatGeoWorldMap, options = providerTileOptions(noWrap = TRUE)) %>%"
+"0","        addMarkers(lng = 35.10244,"
+"0","                   lat = 2.05696, label = ""Kamila"","
+"0","                   labelOptions = labelOptions(noHide = T, direction = ""bottom"")) %>%"
+"0","  addMiniMap()"
