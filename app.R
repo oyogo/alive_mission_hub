@@ -2,6 +2,8 @@
 #'
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
+library(shiny.react)
+library(shiny.semantic)
 library(dplyr)
 library(ggplot2)
 library(glue)
@@ -17,19 +19,20 @@ library(sf)
 library(flipdownr)
 library(ShinyDash)
 library(htmlwidgets)
-library(shiny.react)
-library(shiny.semantic)
+library(htmltools)
+library(flexdashboard)
+
 
 #library(fullcalendar)
 
-#library(htmlwidgets)
-#library(shiny.semantic)
 
 source("R/mod_home.R")
+source("R/mod_butere_mission.R")
+source("R/mod_kamila_mission.R")
 
 
 HorizontalStack <- function(...) {
-  Stack(
+  shiny.fluent::Stack(
     horizontal = TRUE,
     tokens = list(childrenGap = 10),
     ...
@@ -54,11 +57,11 @@ header <- tagList(
                 CommandBarItem("Calendar event", "Calendar", key = "calendarEvent")
             )),
             CommandBarItem("Upload request form", "Upload"),
-            CommandBarItem("Share page", "Share"),
-            CommandBarItem("Download request form", "Download")
+            #CommandBarItem("Share page", "Share"),
+            CommandBarItem("Download mission booklet", "Download")
         ),
         farItems = list(
-            CommandBarItem("Grid view", "Tiles", iconOnly = TRUE),
+            #CommandBarItem("Grid view", "Tiles", iconOnly = TRUE),
             CommandBarItem("Info", "Info", iconOnly = TRUE)
         ),
         style = list(width = "100%", color = "black")))
@@ -91,11 +94,11 @@ kacheliba_page <- makePage(
 
 
 
-butere_page <- makePage(
-  "Butere mission",
-  "statistics about the mission",
-  h3("kasei details")
-)
+# butere_page <- makePage(
+#   "Butere mission",
+#   "statistics about the mission",
+#   h3("kasei details")
+# )
 
 
 projects_page <- makePage(
@@ -124,9 +127,9 @@ router <- make_router(
   route("home", shiny::div(mod_home_ui("home_ui_1"))),
   route("missions_page", missions_page),
   #route("kasei_page", kasei_page),
-  route("kamula_page", kamula_page),
+  route("kamila_page", shiny::div(mod_kamila_ui("kamila_ui_1"))),
   route("kiwawa_page", kiwawa_page),
-  route("butere_page", butere_page),
+  route("butere_page", div(mod_butere_ui("butere_ui_1"))),
   route("kacheliba_page", kacheliba_page),
   route("projects_page",projects_page),
   route("mission_stories_page",mission_stories_page),
@@ -136,16 +139,25 @@ navigation <- Nav(
     groups = list(
         list(links = list(
             list(name = 'Home', url = '#!/home', key = 'home', icon = 'Home'),
-            list(name = 'Missions', url = '#!/missions_page', key = 'missions',
+            list(name = 'Rural missions', url = '#!/missions_page', key = 'missions',
                  expandAriaLabel = "Expand Home section",
                  collapseAriaLabel = "Collapse Home section",
                  links = list(
-                     list(
-                         name = "Kamula",
-                         url = '#!/kamula_page',
-                         key = "kamula"
-                         #target = "_blank"
-                     ),
+                   list(
+                     name = "Kamila",
+                     url = '#!/kamila_page',
+                     #disabled = TRUE,
+                     key = "kamila"
+                     #target = "_blank"
+                   ),
+                   
+                   list(
+                     name = "Butere",
+                     url = '#!/butere_page',
+                     #disabled = TRUE,
+                     key = "butere"
+                     #target = "_blank"
+                   ),
                      list(
                          name = "Kiwawa",
                          url = '#!/kiwawa_page',
@@ -160,13 +172,7 @@ navigation <- Nav(
                        key = "kasei"
                        #target = "_blank"
                      ),
-                     list(
-                       name = "Butere",
-                       url = '#!/butere_page',
-                       #disabled = TRUE,
-                       key = "butere"
-                       #target = "_blank"
-                     ),
+                     
                      list(
                        name = "Kacheliba",
                        url = '#!/kacheliba_page',
@@ -193,7 +199,7 @@ navigation <- Nav(
 )
 
 
-footer <- Stack(
+footer <- shiny.fluent::Stack(
     horizontal = TRUE,
     horizontalAlign = 'space-between',
     tokens = list(childrenGap = 20),
@@ -261,6 +267,8 @@ app_server <- function(input, output, session) {
    
   
   callModule(mod_home_server, "home_ui_1")
+  callModule(mod_butere_server, "butere_ui_1")
+  callModule(mod_kamila_server, "kamila_ui_1")
   
   output$count_down <- renderUI({
 
@@ -301,38 +309,47 @@ app_server <- function(input, output, session) {
 
     })
     
-    output$map2 <- renderLeaflet({
-      
-      leaflet() %>%
-        setView(lat = 2.05696,lng = 35.10244,zoom = 9) %>%
-        addTiles() %>%
-        #addProviderTiles(providers$Esri.NatGeoWorldMap, options = providerTileOptions(noWrap = TRUE)) %>%
-        addMarkers(lng = 35.10244,
-                   lat = 2.05696, label = "Kamila",
-                   labelOptions = labelOptions(noHide = T, direction = "bottom")) %>%
-        addMiniMap(width = 90,height = 80)
-      
-      
-    })
-    
+    # output$map2 <- renderLeaflet({
+    #   
+    #   leaflet() %>%
+    #     setView(lat = 2.05696,lng = 35.10244,zoom = 9) %>%
+    #     addTiles() %>%
+    #     addMarkers(lng = 35.10244,
+    #                lat = 2.05696, label = "Kamila",
+    #                labelOptions = labelOptions(noHide = T, direction = "bottom")) %>%
+    #    
+    #     addMiniMap(width = 90,height = 80) 
+    #   
+    # })
+    # 
     output$gauge_visitations <- flexdashboard::renderGauge({
       flexdashboard::gauge(40, min = 0, max = 100, symbol = "%", label = "Households visited")
     })
-    
-    output$gauge_literature <- flexdashboard::renderGauge({
+
+    output$gauge_literature_butere <- flexdashboard::renderGauge({
       flexdashboard::gauge(60, min = 0, max = 100, symbol = "%", label = "People reached \n with \n literature")
     })
     
-    output$children_class_hist <- renderPlot({
-      
-     
-      df <- data.frame(
-        attendance <- c(23,33,23,54,44,34,34,55,34,23,23,12,21,21,23,21,43,23,22,27,26,25,24,24,14,22)
-      )
-      
-      ggplot(df,aes(x=attendance)) + geom_histogram(binwidth = 10)
-      
+    
+    output$gauge_engagements_kamila <- flexdashboard::renderGauge({
+      flexdashboard::gauge(200, min = 0, max = 500,  symbol = "",label = "Souls engaged \n public air meetings \n and door to door visitations")
     })
+    
+    output$gauge_literature_kamila <- flexdashboard::renderGauge({
+      flexdashboard::gauge(12, min = 0, max = 500, symbol = "", label = "People reached \n with \n literature")
+    })
+    
+    # 
+    # output$children_class_hist <- renderPlot({
+    #   
+    #  
+    #   df <- data.frame(
+    #     attendance <- c(23,33,23,54,44,34,34,55,34,23,23,12,21,21,23,21,43,23,22,27,26,25,24,24,14,22)
+    #   )
+    #   
+    #   ggplot(df,aes(x=attendance)) + geom_histogram(binwidth = 10)
+    #   
+    # })
     
 } 
 

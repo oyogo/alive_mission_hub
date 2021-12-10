@@ -1,23 +1,38 @@
-kamula_page <- Stack(
+
+#' Kamila UI Function
+#'
+#' @description A shiny Module.
+#'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#'
+#' @noRd
+#'
+#' @importFrom shiny NS tagList
+#' @export
+
+mod_kamila_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    fluentPage(
+  
+  Stack(
   tokens = list(childrenGap = 10),
   
   
   br(),
   br(),
-  #h3("kamula...")
-  #card_intro,
   Stack(
     horizontal = TRUE,
     tokens = list(childrenGap = 30),
     Stack(horizontal = FALSE,
           tokens = list(childrenGap = 10),
-          makeCard("About Kamula", div( 
-            leafletOutput("map2", width = "300px"),
-            h3("2863: Total population", style = "color: #59B755;"),
-            h3("234: Households", style = "color: #59B755;"),
-            h3("4: Primary schools", style = "color: #59B755;"),
-            h3("6: Churches", style = "color: #59B755;"),
-            h3("Denominations: Anglican,Pentecostal", style = "color: #59B755;")
+          makeCard("About Kamila", div( 
+            leafletOutput(ns("map_kamila"), width = "100%"),
+            h3("The center is located approximately 2Okm from Kiwawa", style = "color: #59B755;"),
+            h3("500: Approximate residents of the area (mostly consentrated around the market)", style = "color: #59B755;"),
+            h3("Occupation: largely pastoralist with some running businesses at the market centre.", style = "color: #59B755;"),
+            h3("Social amenities: Bore-hole, dispensary and schools", style = "color: #59B755;"),
+            h3("Religion: AIC, Catholic, Full gospel and ACCK", style = "color: #59B755;")
           )),
           
           
@@ -27,17 +42,19 @@ kamula_page <- Stack(
     Stack(
       horizontal = FALSE,
       tokens = list(childrenGap = 1),
-      #h3("Guide text"),
-      # makeCard("2021 Mission Site",  ShinyDash::gaugeOutput("gauge_visitations")),
-      # makeCard("2021 Mission Site",  ShinyDash::gaugeOutput("gauge_literature"))
       makeCard( 
         "Visitation and literature coverage",
         div( 
           Stack( 
             horizontal = TRUE,
             tokens = list(childrenGap = 30),
-            flexdashboard::gaugeOutput("gauge_visitations", width = "300px"),
-            flexdashboard::gaugeOutput("gauge_literature", width = "300px")
+            flexdashboard::gaugeOutput("gauge_engagements_kamila", width = "100%"),
+            flexdashboard::gaugeOutput("gauge_literature_kamila", width = "100%")
+            
+          ),
+          Stack(
+            horizontal = TRUE,
+            h2("64: Homes visited during door to door evangelism")
           )
         )
       ),
@@ -48,7 +65,7 @@ kamula_page <- Stack(
             horizontal = TRUE,
             tokens = list(childrenGap = 30),
             
-            
+            h3("8: Average daily class attendance")
           )
         )
       ),
@@ -58,23 +75,43 @@ kamula_page <- Stack(
           Stack( 
             horizontal = TRUE,
             tokens = list(childrenGap = 30),
-            h2("34: Class attendance"),
-            h2("20: Baptisms")
+            #h2("34: Class attendance"),
+            h2("11: Baptised souls")
           )
         )
       )
-      # h4("how many were enrolled for baptism"),
-      # h4("baptised")
       
     )
-  )#,
-  
-  # Stack( 
-  #   horizontal = TRUE,
-  #   tokens = list(childrenGap = 30),
-  #   
-  #   
-  #   
-  # )
+  )
   
 )
+)
+)
+}
+
+#' kamila Server Functions
+#'
+#' @noRd
+#' @export
+mod_kamila_server <- function(input, output, session) {
+  ns <- session$ns
+  
+  
+  output$map_kamila <- renderLeaflet({
+    
+    leaflet() %>%
+      setView(lat = 0.19841,lng = 34.45989,zoom = 9) %>%
+      addTiles() %>%
+      addMarkers(lng = 34.45989,
+                 lat = 0.19841, label = "Kamila",
+                 labelOptions = labelOptions(noHide = T, direction = "bottom")) %>%
+      
+      addMiniMap(width = 90,height = 80) 
+    
+    
+  })
+  
+  
+ 
+  
+}

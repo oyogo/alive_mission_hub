@@ -99,6 +99,27 @@ body {
   border-radius: 15px;
 }
 
+
+.nextmove {
+    width: 100%;
+    height: 60px;
+    position: inherit;
+    font-family: Lato;
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 4rem;
+    color: white;
+    background-image: url('whatsnext.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 60%;
+    border-bottom-left-radius: 10% 10%;
+    border-bottom-right-radius: 10% 10%;
+    
+}
+
 .card {
   background: #E7E8E8 ;
   padding: 28px;

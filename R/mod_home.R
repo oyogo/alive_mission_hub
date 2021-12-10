@@ -9,12 +9,18 @@
 #' @importFrom shiny NS tagList
 #' @export
 
+
+# About Budalangi - Mudembi sublocation
+
+# Mudembi sublocation
+# Bunyala east location
+
 mod_home_ui <- function(id) {
   ns <- NS(id)
   tagList(
     fluentPage(
       
-      Stack(
+      shiny.fluent::Stack(
         tokens = list(childrenGap = 10),
         div(
           class = "ms-Grid", dir = "ltr",
@@ -31,7 +37,7 @@ mod_home_ui <- function(id) {
      
        div(
          class = "ms-Grid-row",
-         Stack(horizontal = TRUE,
+         shiny.fluent::Stack(horizontal = TRUE,
                tokens = list(childrenGap = 30),
                h1("23: Missions conducted", style = "color: #59B755;"), 
                h1("23423: Souls reached", style = "color: #59B755;"),
@@ -40,7 +46,12 @@ mod_home_ui <- function(id) {
        ),
         div(
           class = "card_skyblue4",
-           h2("Next move : 2021 Rural mission"),
+            
+           #h2("Next move : 2021 Rural mission"),
+          div( class = "ms-Grid-row",
+            id = "nextmove",
+            h3("next move")
+          ),
           
           div(
             class = "ms-Grid-row",
@@ -88,7 +99,7 @@ mod_home_ui <- function(id) {
      div(
        class = "card",
        
-       h2("so far...."),
+       h2("Our coverage so far...."),
        
        div(
          class = "ms-Grid-row",
@@ -117,6 +128,7 @@ mod_home_server <- function(input, output, session) {
   m.locations <- sf::st_read("data/shp/County.shp") %>%
     st_transform(crs = 4326)
   
+  mission_sites <- read.csv("data/mission_sites.csv")
   
   output$count_down <- renderUI({
     
@@ -150,11 +162,19 @@ mod_home_server <- function(input, output, session) {
   
   output$missionsite.map <- renderLeaflet({
     
+    content <- paste(sep = "<br/>",
+                     "Some facts about Budalangi",
+                     "Population: 34000",
+                     "Denominations: Anglican, Catholic, Muslim, PCEA",
+                     "Occupation: Mostly farmers, white collar jobs"
+    )
+    
     leaflet() %>%
       setView(lat = 0.14, lng = 34.0266, 9) %>%
       addTiles() %>%
       addPolygons(data = m.locations) %>%
-      addMarkers(lng = 34.0266, lat = 0.14) %>%
+      #addMarkers(lng = 34.0266, lat = 0.14) %>%
+      addPopups(lat = 0.14,lng = 34.0266, content,options = popupOptions(closeButton = FALSE)) %>%
       addMiniMap(position = "bottomright")
     
     
@@ -162,9 +182,10 @@ mod_home_server <- function(input, output, session) {
   
   output$retrospect_map <- renderLeaflet({
     
-    leaflet() %>%
-      addProviderTiles(providers$Stamen.TonerLite, options = providerTileOptions(noWrap = TRUE)) %>%
-      addPolygons(data = m.locations)
+    leaflet(mission_sites) %>%
+      addTiles() %>%
+      addPolygons(data = m.locations) %>%
+      addMarkers(~longitude,~latitude, label = ~htmlEscape(site),labelOptions = labelOptions(noHide = T))
     
     
   })
