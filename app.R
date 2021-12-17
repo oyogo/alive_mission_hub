@@ -30,6 +30,19 @@ source("R/mod_home.R")
 source("R/mod_butere_mission.R")
 source("R/mod_kamila_mission.R")
 
+makePage <- function (title, subtitle, contents) {
+  tagList(div(
+    class = "page-title",
+    span(title, class = "ms-fontSize-32 ms-fontWeight-semibold", style =
+           "color: #323130"),
+    span(subtitle, class = "ms-fontSize-14 ms-fontWeight-regular", style =
+           "color: #605E5C; margin: 14px;")
+  ),
+  contents)
+}
+
+
+
 
 HorizontalStack <- function(...) {
   shiny.fluent::Stack(
@@ -44,7 +57,6 @@ f <- list(
   size = "3rem",
   color = "white"
 )
-
 
 
 header <- tagList(
@@ -65,7 +77,6 @@ header <- tagList(
             CommandBarItem("Info", "Info", iconOnly = TRUE)
         ),
         style = list(width = "100%", color = "black")))
-
 
 
 missions_page <- makePage(
@@ -259,7 +270,6 @@ app_ui <- function(request) {
 }
 
 
-
 # Define server logic required to draw a histogram
 app_server <- function(input, output, session) {
 
@@ -308,20 +318,7 @@ app_server <- function(input, output, session) {
 
 
     })
-    
-    # output$map2 <- renderLeaflet({
-    #   
-    #   leaflet() %>%
-    #     setView(lat = 2.05696,lng = 35.10244,zoom = 9) %>%
-    #     addTiles() %>%
-    #     addMarkers(lng = 35.10244,
-    #                lat = 2.05696, label = "Kamila",
-    #                labelOptions = labelOptions(noHide = T, direction = "bottom")) %>%
-    #    
-    #     addMiniMap(width = 90,height = 80) 
-    #   
-    # })
-    # 
+  
     output$gauge_visitations <- flexdashboard::renderGauge({
       flexdashboard::gauge(40, min = 0, max = 100, symbol = "%", label = "Households visited")
     })
@@ -339,18 +336,7 @@ app_server <- function(input, output, session) {
       flexdashboard::gauge(12, min = 0, max = 500, symbol = "", label = "People reached \n with \n literature")
     })
     
-    # 
-    # output$children_class_hist <- renderPlot({
-    #   
-    #  
-    #   df <- data.frame(
-    #     attendance <- c(23,33,23,54,44,34,34,55,34,23,23,12,21,21,23,21,43,23,22,27,26,25,24,24,14,22)
-    #   )
-    #   
-    #   ggplot(df,aes(x=attendance)) + geom_histogram(binwidth = 10)
-    #   
-    # })
-    
+   
 } 
 
 # Run the application 
