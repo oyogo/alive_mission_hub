@@ -10,6 +10,18 @@
 #' @importFrom shiny NS tagList
 #' @export
 
+makeCard <- function(title, content, size = 12, style = "") {
+  div(
+    class = glue("card ms-depth-8 ms-sm{size} ms-xl{size}"),
+    style = style,
+    Stack(
+      tokens = list(childrenGap = 5),
+      Text(variant = "large", title, block = TRUE),
+      content
+    )
+  )
+}
+
 mod_butere_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -21,7 +33,7 @@ mod_butere_ui <- function(id) {
         br(),
         Stack(
           horizontal = TRUE,
-          tokens = list(childrenGap = 30),
+          tokens = list(childrenGap = 10),
           Stack(horizontal = FALSE,
                 tokens = list(childrenGap = 10),
                 makeCard("Masaba - Butere", div( 
@@ -31,46 +43,57 @@ mod_butere_ui <- function(id) {
                   h3("Religion: Christianity takes the lead, having ACK as the dominant church followed by other evangelical believers. 
                      Islamic also takes a good number of the locals.", style = "color: #59B755;")
                  
-                )),
+                ), style = "width: 800px;"
+                )
                 
                 
           ),
-          br(),
-          br(),
+        
           Stack(
             horizontal = FALSE,
-            tokens = list(childrenGap = 1),
-            makeCard( 
+            tokens = list(childrenGap = 10),
+            makeCard(
               "Visitation and literature coverage",
               div( 
+                
                 Stack( 
                   horizontal = TRUE,
-                  tokens = list(childrenGap = 30),
-                  flexdashboard::gaugeOutput("gauge_visitations", width = "300px"),
-                  flexdashboard::gaugeOutput("gauge_literature_butere", width = "300px")
+                  tokens = list(childrenGap = 1),
+                  Stack( 
+                    horizontal = FALSE,
+                    tokens = list(childrenGap = 30),
+                    div(h4("Souls engaged at \n public air meetings \n and door to door visitations"),
+                        plotlyOutput("gauge_visitations_butere", height = "190px", width = "300px"))
+                  ),
+                  Stack( 
+                    horizontal = FALSE,
+                    tokens = list(childrenGap = 30),
+                    div(h4("Number of people reached with literature"),plotlyOutput("gauge_literature_butere", height = "190px", width = "300px"))
+                  )
+                  
                 )
-              )
+              ), style = "margin-left: 10px; margin-right: 20px; width: 600px; .text { fill: green; }"
             ),
             makeCard( 
-              "Children ministry",
+              h3("Children ministry"),
               div( 
                 Stack( 
                   horizontal = TRUE,
-                  tokens = list(childrenGap = 30),
+                  tokens = list(childrenGap = 20),
                   
-                  h2("40 - 60 : Average attendance")
+                  h3("40 - 60 : Average attendance")
                 )
-              )
+              ), style = "margin-left: 10px; margin-right: 20px; width: 600px; .text { fill: green; }"
             ),
-            makeCard( 
+            makeCard(
               "Bible study class",
               div( 
                 Stack( 
                   horizontal = FALSE,
-                  tokens = list(childrenGap = 30),
-                  h2("6: Baptisms")
+                  tokens = list(childrenGap = 20),
+                  h3("6: Baptisms")
                 )
-              )
+              ), style = "margin-left: 10px; margin-right: 20px; width: 600px; text: red;"
             )
             
           )

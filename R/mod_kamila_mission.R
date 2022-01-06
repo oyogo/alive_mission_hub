@@ -46,7 +46,8 @@ mod_kamila_ui <- function(id) {
             h3("Occupation: largely pastoralist with some running businesses at the market centre.", style = "color: #59B755;"),
             h3("Social amenities: Bore-hole, dispensary and schools", style = "color: #59B755;"),
             h3("Religion: AIC, Catholic, Full gospel and ACCK", style = "color: #59B755;")
-          )),
+          ), style = "width: 800px;"
+          ),
           
           
     ),
@@ -58,18 +59,24 @@ mod_kamila_ui <- function(id) {
       makeCard( 
         "Visitation and literature coverage",
         div( 
+          
           Stack( 
             horizontal = TRUE,
-            tokens = list(childrenGap = 30),
-            flexdashboard::gaugeOutput("gauge_engagements_kamila", width = "100%"),
-            flexdashboard::gaugeOutput("gauge_literature_kamila", width = "100%")
+            tokens = list(childrenGap = 1),
+            Stack( 
+              horizontal = FALSE,
+              tokens = list(childrenGap = 30),
+              div(h4("Souls engaged at \n public air meetings \n and door to door visitations"),
+                  plotlyOutput("gauge_visitations_kamila", height = "190px", width = "300px"))
+            ),
+            Stack( 
+              horizontal = FALSE,
+              tokens = list(childrenGap = 30),
+              div(h4("Number of people reached with literature"),plotlyOutput("gauge_literature_kamila", height = "190px", width = "300px"))
+            )
             
-          ),
-          Stack(
-            horizontal = TRUE,
-            h2("64: Homes visited during door to door evangelism")
           )
-        )
+        ),style = "margin-left: 10px; margin-right: 20px; width: 600px; .text { fill: green; }"
       ),
       makeCard( 
         "Children ministry",
@@ -80,7 +87,8 @@ mod_kamila_ui <- function(id) {
             
             h3("8: Average daily class attendance")
           )
-        )
+        ),
+        style = "margin-left: 10px; margin-right: 20px; width: 600px;"
       ),
       makeCard( 
         "Bible study class",
@@ -91,7 +99,8 @@ mod_kamila_ui <- function(id) {
             #h2("34: Class attendance"),
             h2("11: Baptised souls")
           )
-        )
+        ),
+        style = "margin-left: 10px; margin-right: 20px; width: 600px;"
       )
       
     )

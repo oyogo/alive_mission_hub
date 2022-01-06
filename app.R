@@ -7,7 +7,6 @@ library(shiny.semantic)
 library(dplyr)
 library(ggplot2)
 library(glue)
-library(leaflet)
 library(plotly)
 library(sass)
 library(shiny)
@@ -17,7 +16,7 @@ library(calendR)
 library(leaflet)
 library(sf)
 library(flipdownr)
-library(ShinyDash)
+library(ShinyDash) #remotes::install_github("trestletech/ShinyDash")
 library(htmlwidgets)
 library(htmltools)
 library(flexdashboard)
@@ -29,6 +28,7 @@ library(flexdashboard)
 source("R/mod_home.R")
 source("R/mod_butere_mission.R")
 source("R/mod_kamila_mission.R")
+source("R/mod_budalangi_mission.R")
 
 makePage <- function (title, subtitle, contents) {
   tagList(div(
@@ -40,8 +40,6 @@ makePage <- function (title, subtitle, contents) {
   ),
   contents)
 }
-
-
 
 
 HorizontalStack <- function(...) {
@@ -64,13 +62,13 @@ header <- tagList(
     div(Text(variant = "xLarge", "Mission Hub"), class = "title"),
     CommandBar(
         items = list(
-            CommandBarItem("New", "Add", subitems = list(
-                CommandBarItem("Email message", "Mail", key = "emailMessage", href = "mailto:me@example.com"),
-                CommandBarItem("Calendar event", "Calendar", key = "calendarEvent")
+            CommandBarItem("Resources", "Download", subitems = list(
+                CommandBarItem("Download user manual", "Download", key = "download_usermanual"),
+                CommandBarItem("Download mission booklet", "Download", key = "download_mbooklet")
             )),
-            CommandBarItem("Upload request form", "Upload"),
+            CommandBarItem("Upload request form", "Upload")#,
             #CommandBarItem("Share page", "Share"),
-            CommandBarItem("Download mission booklet", "Download")
+            #CommandBarItem("Download mission booklet", "Download")
         ),
         farItems = list(
             #CommandBarItem("Grid view", "Tiles", iconOnly = TRUE),
@@ -85,12 +83,6 @@ missions_page <- makePage(
    h3("an overview of missions conducted")
 )
 
-
-kasei_page <- makePage(
-  "Kasei mission",
-  "statistics about the mission",
-  h3("kasei details")
-)
 kiwawa_page <- makePage(
   "Kiwawa mission",
   "statistics about the mission",
@@ -103,14 +95,11 @@ kacheliba_page <- makePage(
   h3("kasei details")
 )
 
-
-
 # butere_page <- makePage(
 #   "Butere mission",
 #   "statistics about the mission",
 #   h3("kasei details")
 # )
-
 
 projects_page <- makePage(
     "List of projects",
@@ -124,11 +113,6 @@ mission_stories_page <- makePage(
     h3("Highlights from mission")
 )
 
-map_page <- makePage(
-    "Map of either potential sites",
-    "dropdown select of mission sites",
-    h3("Show spatial data on mission sites")
-)
 
 
 
@@ -137,15 +121,11 @@ router <- make_router(
   #route("/", home_page),
   route("home", shiny::div(mod_home_ui("home_ui_1"))),
   route("missions_page", missions_page),
-  #route("kasei_page", kasei_page),
+  route("budalangi_page", shiny::div(mod_budalangi_ui("budalangi_ui_1"))),
   route("kamila_page", shiny::div(mod_kamila_ui("kamila_ui_1"))),
-  route("kiwawa_page", kiwawa_page),
   route("butere_page", div(mod_butere_ui("butere_ui_1"))),
-  route("kacheliba_page", kacheliba_page),
   route("projects_page",projects_page),
-  route("mission_stories_page",mission_stories_page),
-  route("map_page",map_page))
-
+  route("mission_stories_page",mission_stories_page))
 navigation <- Nav(
     groups = list(
         list(links = list(
@@ -155,48 +135,26 @@ navigation <- Nav(
                  collapseAriaLabel = "Collapse Home section",
                  links = list(
                    list(
+                     name = "Budalangi",
+                     url = '#!/budalangi_page',
+                     key = "budalangi"
+                   ),
+                   
+                   list(
                      name = "Kamila",
                      url = '#!/kamila_page',
-                     #disabled = TRUE,
                      key = "kamila"
-                     #target = "_blank"
                    ),
                    
                    list(
                      name = "Butere",
                      url = '#!/butere_page',
-                     #disabled = TRUE,
                      key = "butere"
-                     #target = "_blank"
-                   ),
-                     list(
-                         name = "Kiwawa",
-                         url = '#!/kiwawa_page',
-                         #disabled = TRUE,
-                         key = "kiwawa"
-                         #target = "_blank"
-                     ),
-                     list(
-                       name = "Kasei",
-                       url = '#!/kasei_page',
-                       #disabled = TRUE,
-                       key = "kasei"
-                       #target = "_blank"
-                     ),
-                     
-                     list(
-                       name = "Kacheliba",
-                       url = '#!/kacheliba_page',
-                       #disabled = TRUE,
-                       key = "kacheliba"
-                       #target = "_blank"
-                     )
-                     
+                   )
                  ),
                  isExpanded = TRUE),
             list(name = 'Projects', url = '#!/projects_page', key = 'projects', icon = 'GitGraph'),
-            list(name = 'Mission stories', url = '#!/mission_stories_page', key = 'shinyreact', icon = 'GitGraph'),
-            list(name = 'Map', url = '#!/map_page', key = 'map_page', icon = 'WebAppBuilderFragment')
+            list(name = 'Mission stories', url = '#!/mission_stories_page', key = 'shinyreact', icon = 'GitGraph')
         ))
     ),
     initialSelectedKey = 'home',
@@ -269,16 +227,15 @@ app_ui <- function(request) {
   )
 }
 
-
 # Define server logic required to draw a histogram
 app_server <- function(input, output, session) {
 
     router$server(input, output, session)
    
-  
   callModule(mod_home_server, "home_ui_1")
   callModule(mod_butere_server, "butere_ui_1")
   callModule(mod_kamila_server, "kamila_ui_1")
+  callModule(mod_budalangi_server, "budalangi_ui_1")
   
   output$count_down <- renderUI({
 
@@ -319,24 +276,295 @@ app_server <- function(input, output, session) {
 
     })
   
-    output$gauge_visitations <- flexdashboard::renderGauge({
-      flexdashboard::gauge(40, min = 0, max = 100, symbol = "%", label = "Households visited")
+    # output$gauge_visitations <- flexdashboard::renderGauge({
+    #   flexdashboard::gauge(40, min = 0, max = 100, symbol = "%", label = "Households visited")
+    # })
+    # 
+    # output$gauge_literature_butere <- flexdashboard::renderGauge({
+    #   flexdashboard::gauge(60, min = 0, max = 100, symbol = "%", label = "People reached \n with \n literature")
+    # })
+    
+    
+    # output$gauge_engagements_kamila <- flexdashboard::renderGauge({
+    #   flexdashboard::gauge(200, min = 0, max = 500,  symbol = "",label = "Souls engaged \n public air meetings \n and door to door visitations")
+    # })
+    # 
+    # output$gauge_literature_kamila <- flexdashboard::renderGauge({
+    #   flexdashboard::gauge(12, min = 0, max = 500, symbol = "", label = "People reached \n with \n literature")
+    # })
+    
+    
+    output$gauge_visitations_budalangi <- renderPlotly({
+      
+      fig <- plot_ly(
+        
+        type = "indicator",
+        
+        mode = "gauge+number",
+        
+        value = 200,
+        
+        gauge = list(
+          
+          axis = list(range = list(NULL, 4113), tickwidth = 1, tickcolor = "darkblue"),
+          
+          bar = list(color = "darkblue"),
+          
+          bgcolor = "white",
+          
+          borderwidth = 2,
+          
+          bordercolor = "gray",
+          threshold = list(
+            
+            line = list(color = "green", width = 6),
+            
+            thickness = 1,
+            
+            value = 4113)
+       )) 
+      
+      fig <- fig %>% plotly::layout(
+          
+          margin = list(l=20,r=30),
+          
+          paper_bgcolor = "#E7E8E8",
+          
+          font = list(color = "darkblue", family = "Arial", size = 10))
+      
+      
+      fig
     })
-
-    output$gauge_literature_butere <- flexdashboard::renderGauge({
-      flexdashboard::gauge(60, min = 0, max = 100, symbol = "%", label = "People reached \n with \n literature")
+    
+    output$gauge_literature_budalangi <- renderPlotly({
+      fig <- plot_ly(
+        
+        type = "indicator",
+        
+        mode = "gauge+number",
+        
+        value = 420,
+        
+        #title = list(text = "Number of people reached with literature", font = list(size = 10)),
+        
+        #delta = list(reference = 400, increasing = list(color = "RebeccaPurple")),
+        
+        gauge = list(
+          
+          axis = list(range = list(NULL, 4113), tickwidth = 1, tickcolor = "darkblue"),
+          
+          bar = list(color = "darkblue"),
+          
+          bgcolor = "white",
+          
+          borderwidth = 2,
+          
+          bordercolor = "gray",
+          threshold = list(
+            
+            line = list(color = "green", width = 6),
+            
+            thickness = 1,
+            
+            value = 4113)
+          
+          
+          
+       )) 
+      
+      fig <- fig %>% plotly::layout(
+          
+          margin = list(l=20,r=30),
+          
+          paper_bgcolor = "#E7E8E8",
+          
+          font = list(color = "darkblue", family = "Arial", size = 10))
+      
+      
+      fig
+    })
+    
+    output$gauge_visitations_kamila <- renderPlotly({
+      
+      fig <- plot_ly(
+        
+        type = "indicator",
+        
+        mode = "gauge+number",
+        
+        value = 200,
+        
+        gauge = list(
+          
+          axis = list(range = list(NULL, 500), tickwidth = 1, tickcolor = "darkblue"),
+          
+          bar = list(color = "darkblue"),
+          
+          bgcolor = "white",
+          
+          borderwidth = 2,
+          
+          bordercolor = "gray",
+          threshold = list(
+            
+            line = list(color = "green", width = 6),
+            
+            thickness = 1,
+            
+            value = 500)
+        )) 
+      
+      fig <- fig %>% plotly::layout(
+        
+        margin = list(l=20,r=30),
+        
+        paper_bgcolor = "#E7E8E8",
+        
+        font = list(color = "darkblue", family = "Arial", size = 10))
+      
+      
+      fig
+    })
+    
+    output$gauge_literature_kamila <- renderPlotly({
+      fig <- plot_ly(
+        
+        type = "indicator",
+        
+        mode = "gauge+number",
+        
+        value = 12,
+        
+        #title = list(text = "Number of people reached with literature", font = list(size = 10)),
+        
+        #delta = list(reference = 400, increasing = list(color = "RebeccaPurple")),
+        
+        gauge = list(
+          
+          axis = list(range = list(NULL, 500), tickwidth = 1, tickcolor = "darkblue"),
+          
+          bar = list(color = "darkblue"),
+          
+          bgcolor = "white",
+          
+          borderwidth = 2,
+          
+          bordercolor = "gray",
+          threshold = list(
+            
+            line = list(color = "green", width = 6),
+            
+            thickness = 1,
+            
+            value = 500)
+          
+          
+          
+        )) 
+      
+      fig <- fig %>% plotly::layout(
+        
+        margin = list(l=20,r=30),
+        
+        paper_bgcolor = "#E7E8E8",
+        
+        font = list(color = "darkblue", family = "Arial", size = 10))
+      
+      
+      fig
     })
     
     
-    output$gauge_engagements_kamila <- flexdashboard::renderGauge({
-      flexdashboard::gauge(200, min = 0, max = 500,  symbol = "",label = "Souls engaged \n public air meetings \n and door to door visitations")
+    
+    output$gauge_visitations_butere <- renderPlotly({
+      
+      fig <- plot_ly(
+        
+        type = "indicator",
+        
+        mode = "gauge+number",
+        
+        value = 150,
+        
+        gauge = list(
+          
+          axis = list(range = list(NULL, 3000), tickwidth = 1, tickcolor = "darkblue"),
+          
+          bar = list(color = "darkblue"),
+          
+          bgcolor = "white",
+          
+          borderwidth = 2,
+          
+          bordercolor = "gray",
+          threshold = list(
+            
+            line = list(color = "green", width = 6),
+            
+            thickness = 1,
+            
+            value = 3000)
+        )) 
+      
+      fig <- fig %>% plotly::layout(
+        
+        margin = list(l=20,r=30),
+        
+        paper_bgcolor = "#E7E8E8",
+        
+        font = list(color = "darkblue", family = "Arial", size = 10))
+      
+      
+      fig
     })
     
-    output$gauge_literature_kamila <- flexdashboard::renderGauge({
-      flexdashboard::gauge(12, min = 0, max = 500, symbol = "", label = "People reached \n with \n literature")
+    output$gauge_literature_butere <- renderPlotly({
+      fig <- plot_ly(
+        
+        type = "indicator",
+        
+        mode = "gauge+number",
+        
+        value = 40,
+        
+        #title = list(text = "Number of people reached with literature", font = list(size = 10)),
+        
+        #delta = list(reference = 400, increasing = list(color = "RebeccaPurple")),
+        
+        gauge = list(
+          
+          axis = list(range = list(NULL, 3000), tickwidth = 1, tickcolor = "darkblue"),
+          
+          bar = list(color = "darkblue"),
+          
+          bgcolor = "white",
+          
+          borderwidth = 2,
+          
+          bordercolor = "gray",
+          threshold = list(
+            
+            line = list(color = "green", width = 6),
+            
+            thickness = 1,
+            
+            value = 3000)
+          
+          
+          
+        )) 
+      
+      fig <- fig %>% plotly::layout(
+        
+        margin = list(l=20,r=30),
+        
+        paper_bgcolor = "#E7E8E8",
+        
+        font = list(color = "darkblue", family = "Arial", size = 10))
+      
+      
+      fig
     })
-    
-   
 } 
 
 # Run the application 

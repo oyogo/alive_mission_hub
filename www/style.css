@@ -73,13 +73,12 @@ body {
 .main {
   grid-area: main;
   background: linear-gradient(180deg, #8e97c544 0%, #699e9648 100%);
-  padding-left: 40px;
+  padding-left: 30px;
   padding-right: 32px;
   max-width: calc(100vw - 400px);
   max-height: calc(107vh - 100px);
   overflow: auto;
 }
-
 
 .page-title {
   padding: 52px 0px;
@@ -97,6 +96,7 @@ body {
 .ms-depth-8 {
   box-shadow: 0 3.2px 7.2px 0 rgb(0 0 0 / 13%), 0 0.6px 1.8px 0 rgb(0 0 0 / 11%);
   border-radius: 15px;
+  margin-left: 40px;
 }
 
 

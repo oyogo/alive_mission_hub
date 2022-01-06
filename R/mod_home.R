@@ -39,9 +39,9 @@ mod_home_ui <- function(id) {
          class = "ms-Grid-row",
          shiny.fluent::Stack(horizontal = TRUE,
                tokens = list(childrenGap = 30),
-               h1("23: Missions conducted", style = "color: #59B755;"), 
-               h1("23423: Souls reached", style = "color: #59B755;"),
-               h1("453: Baptised", style = "color: #59B755;")
+               h1("10: Missions conducted", style = "color: #59B755;"), 
+               h1("3000+: Souls reached", style = "color: #59B755;"),
+               h1("50+: Baptised", style = "color: #59B755;")
          )
        ),
         div(
@@ -49,7 +49,7 @@ mod_home_ui <- function(id) {
             
            #h2("Next move : 2021 Rural mission"),
           div( class = "ms-Grid-row",
-            id = "nextmove",
+            #id = "nextmove",
             h3("next move")
           ),
           
@@ -163,8 +163,8 @@ mod_home_server <- function(input, output, session) {
   output$missionsite.map <- renderLeaflet({
     
     content <- paste(sep = "<br/>",
-                     "Some facts about Budalangi",
-                     "Population: 34000",
+                     "Some details about Mudembi",
+                     "Population: 4113",
                      "Denominations: Anglican, Catholic, Muslim, PCEA",
                      "Occupation: Mostly farmers, white collar jobs"
     )
