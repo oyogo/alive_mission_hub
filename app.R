@@ -302,7 +302,7 @@ app_server <- function(input, output, session) {
         
         mode = "gauge+number",
         
-        value = 200,
+        value = 175,
         
         gauge = list(
           

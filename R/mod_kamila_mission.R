@@ -122,10 +122,10 @@ mod_kamila_server <- function(input, output, session) {
   output$map_kamila <- renderLeaflet({
     
     leaflet() %>%
-      setView(lat = 0.19841,lng = 34.45989,zoom = 9) %>%
+      setView(lat = 1.7863481,lng = 35.0553031,zoom = 9) %>%
       addTiles() %>%
-      addMarkers(lng = 34.45989,
-                 lat = 0.19841, label = "Kamila",
+      addMarkers(lng = 35.0553031,
+                 lat = 1.7863481, label = "Kamila",
                  labelOptions = labelOptions(noHide = T, direction = "bottom")) %>%
       
       addMiniMap(width = 90,height = 80) 

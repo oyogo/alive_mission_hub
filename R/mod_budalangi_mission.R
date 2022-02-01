@@ -37,7 +37,7 @@ mod_budalangi_ui <- function(id) {
           tokens = list(childrenGap = 30),
           Stack(horizontal = FALSE,
                 tokens = list(childrenGap = 10),
-                makeCard("Budalangi - Mudembi | 12th - 31st, 2021", div( 
+                makeCard("Budalangi - Mudembi | 13th Dec 2021 - 1st Jan, 2022", div( 
                   leafletOutput(ns("map_butere"), width = "100%"),
                   h3("Location: Kakamega county, 3Km from Butere lower market", style = "color: #59B755;"),
                   h3("Households: 2470", style = "color: #59B755;"),
@@ -61,17 +61,18 @@ mod_budalangi_ui <- function(id) {
                    
                    Stack( 
                      horizontal = TRUE,
-                     tokens = list(childrenGap = 1),
+                     tokens = list(childrenGap = 20),
                    Stack( 
                      horizontal = FALSE,
                      tokens = list(childrenGap = 30),
-                     div(h4("Souls engaged at \n public air meetings \n and door to door visitations"),
+                     div(h4("Number of individuals interacted with"),
                          plotlyOutput("gauge_visitations_budalangi", height = "190px", width = "300px"))
                    ),
                    Stack( 
                      horizontal = FALSE,
                      tokens = list(childrenGap = 30),
-                     div(h4("Number of people reached with literature"),plotlyOutput("gauge_literature_budalangi", height = "190px", width = "300px"))
+                     div(h4("Number of people reached with literature"),plotlyOutput(ns("bargraph.literatue"),#"gauge_literature_budalangi", 
+                                                                                     height = "190px", width = "300px"))
                    )
                    
                  )
@@ -120,16 +121,31 @@ mod_budalangi_server <- function(input, output, session) {
     leaflet() %>%
       setView(lat = 0.19841,lng = 34.45989,zoom = 9) %>%
       addTiles() %>%
-      addMarkers(lng = 34.45989,
-                 lat = 0.19841, label = "Masaba",
+      addMarkers(lng = 34.0266,
+                 lat = 0.14, label = "Masaba",
                  labelOptions = labelOptions(noHide = T, direction = "bottom")) %>%
-      
-      addMiniMap(width = 90,height = 80) 
-    
+       addMiniMap(width = 90,height = 80) 
+ 
     
   })
   
-  
+  output$bargraph.literatue <- renderPlotly({
+    
+    literature.data <- data.frame(literature=c("Ugunduzi","Bibles","Njia salama","Pambano kuu"),
+                                  quantity=c(14,9,16,9))
+    
+    plot_ly(data = literature.data,
+            x = ~reorder(literature,-quantity),
+            y = ~quantity,
+            color = ~literature,
+            colors = "Dark2",
+            showlegend = FALSE,
+            type = "bar") %>%
+      plotly::layout(yaxis=list(title="Count"), xaxis=list(title="Literature"),
+                     plot_bgcolor = "rgba(0,0,0,0)",
+                     paper_bgcolor = "rgba(0,0,0,0)")
+    
+  })
   
   
   
